@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func main() {
 	const (
@@ -9,32 +12,69 @@ func main() {
 
 		cellEmpty = ' '
 		cellBall = '🏀'
+
+		maxFrames = 1200
+
+		speed = time.Second / 20
 	)
 
-	var cell rune
+	var (
+		px, py int
+		vx, vy = 1, 1
+
+		cell rune
+	)
 
 	board := make([][]bool, width)
 	for column := range board {
 		board[column] = make([]bool, height)
 	}
 
-	board[0][0] = true
+	for i := 0; i < maxFrames; i++ {
+		px += vx
+		py += vy
 
-	buf := make([]rune, 0, width * height)
-
-	buf = buf[:0]
-
-	// draw the board
-	for y := range board[0] {
-		for x := range board {
-			cell = cellEmpty
-			if board[x][y] {
-				cell = cellBall
-			}
-			buf = append(buf, cell, ' ')
+		if px <= 0 || px >= height - 1 {
+			vx *= -1
 		}
 
-		buf = append(buf, '\n')
+		if py <= 0 || py >= width - 1 {
+			vy *= -1
+		}
+
+		for y := range board[0] {
+			for x := range board {
+				board[x][y] = false
+			}
+		}
+
+		board[py][px] = true  
+
+		buf := make([]rune, 0, width * height)
+
+		buf = buf[:0]
+
+		// draw the board
+		for y := range board[0] {
+			for x := range board {
+				cell = cellEmpty
+				if board[x][y] {
+					cell = cellBall
+				}
+				buf = append(buf, cell, ' ')
+			}
+
+			buf = append(buf, '\n')
+		}
+		
+		moveTopLeft()
+
+		fmt.Print(string(buf))
+
+		time.Sleep(speed)
 	}
-	fmt.Print(string(buf))
+}
+
+func moveTopLeft() {
+	fmt.Print("\033[H")
 }
