@@ -20,6 +20,10 @@ func main() {
 
 	board[0][0] = true
 
+	buf := make([]rune, 0, width * height)
+
+	buf = buf[:0]
+
 	// draw the board
 	for y := range board[0] {
 		for x := range board {
@@ -27,9 +31,10 @@ func main() {
 			if board[x][y] {
 				cell = cellBall
 			}
-			fmt.Print(string(cell), " ")
+			buf = append(buf, cell, ' ')
 		}
 
-		fmt.Println()
+		buf = append(buf, '\n')
 	}
+	fmt.Print(string(buf))
 }
